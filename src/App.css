@@ -1,5 +1,5 @@
 .App {
-  text-align: center;
+  /* text-align: center; */
 }
 
 .App-logo {
@@ -15,13 +15,7 @@
 
 .App-header {
   background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  padding: 1rem;
 }
 
 .App-link {
@@ -38,4 +32,59 @@
   100% {
     transform: scale(0.8);
   }
+}
+
+.passcode-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 1;
+  overflow-x: hidden;
+}
+
+.passcode {
+  background: none;
+  padding: 0;
+  /* background-color: rgb(250, 228, 228); */
+  position: absolute;
+  border: none;
+  outline: none;
+  font-size: 1;
+  width: calc(100% + 5rem);
+  height: 100%;
+
+  position: absolute;
+  left: -5rem;
+  /* color: transparent;
+  opacity: 0; */
+}
+
+.body {
+  padding: 1.2rem;
+  background-color: #282c34;
+}
+
+.digit-box {
+  /* background-color: green; */
+  width: 100%;
+  height: calc(100vh - 2.4rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.digit {
+  /* font-size: 10vw; */
+  width: min(100%, 5rem);
+  aspect-ratio: 1 / 2;
+  /* padding: 1.2rem; */
+  background-color: lightgrey;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #282c34;
 }
