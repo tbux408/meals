@@ -14,13 +14,12 @@ export const login = async (passcode) => {
   return response;
 };
 
-
-export const get_meals = async (path, auth, setLoggedIn) => {
+export const get_meals = async (path, setLoggedIn) => {
   const response = await fetch(process.env.REACT_APP_PUBLIC_API_URL + path, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: auth,
+      Authorization: localStorage.getItem("access_token_meals"),
     },
     // credentials: "include",
     // body: JSON.stringify(body),
@@ -35,16 +34,36 @@ export const get_meals = async (path, auth, setLoggedIn) => {
   return data;
 };
 
-export const fetch_meals = async (type, path, body) => {
+
+export const fetch_meals = async (type, path, body, setLoggedIn) => {
   const response = await fetch(process.env.REACT_APP_PUBLIC_API_URL + path, {
     method: type,
     headers: {
       "Content-Type": "application/json",
-      Authorization: "483282",
+      Authorization: localStorage.getItem("access_token_meals"),
     },
-    // credentials: "include",
-    // body: JSON.stringify(body),
+    body: JSON.stringify(body),
   });
+  if (response.status === 401) {
+    setLoggedIn(false);
+    localStorage.removeItem("access_token_meals");
+    return null;
+  }
   const data = await response.json();
+  console.log(data);
   return data;
 };
+
+// export const fetch_meals = async (type, path, body) => {
+//   const response = await fetch(process.env.REACT_APP_PUBLIC_API_URL + path, {
+//     method: type,
+//     headers: {
+//       "Content-Type": "application/json",
+//       Authorization: localStorage.removeItem("access_token_meals"),
+//     },
+//     // credentials: "include",
+//     // body: JSON.stringify(body),
+//   });
+//   const data = await response.json();
+//   return data;
+// };

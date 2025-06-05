@@ -1,0 +1,32 @@
+.recipecontainer {
+  width: 100%;
+}
+
+.recipe {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin: auto auto;
+  padding: 1rem;
+  max-width: 350px;
+}
+
+.title {
+  font-weight: bold;
+}
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  min-height: 32px;
+}
+.picked {
+  text-decoration: line-through;
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+.unpicked {
+  cursor: pointer;
+}

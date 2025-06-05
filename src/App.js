@@ -3,18 +3,24 @@ import "./App.css";
 import React, { useEffect, useState } from "react";
 import CircleIcon from "@mui/icons-material/Circle";
 import { login, get_meals } from "./fetch/fetch";
+import Meals from "./components/Meals";
 
 function App() {
   const [passcode, setPasscode] = useState("");
   const [error, setError] = useState(false);
   const [loggedIn, setLoggedIn] = useState(true);
+  const [meals, setMeals] = useState([]);
 
   useEffect(() => {
-    const access_token = localStorage.getItem("access_token_meals");
-    if (access_token) {
-      setLoggedIn(true);
-    }
-    get_meals("/meals", access_token, setLoggedIn);
+    const start = async () => {
+      const access_token = localStorage.getItem("access_token_meals");
+      if (!access_token) {
+        setLoggedIn(false);
+      }
+      const temp_meals = await get_meals("/meals", setLoggedIn);
+      setMeals(temp_meals);
+    };
+    start();
   }, []);
 
   const handleChange = async (e) => {
@@ -66,7 +72,9 @@ function App() {
           </div>
         </div>
       ) : (
-        <div> logged </div>
+        <div>
+          <Meals meals={meals} setMeals={setMeals} setLoggedIn={setLoggedIn} />
+        </div>
       )}
     </div>
   );
