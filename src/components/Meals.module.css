@@ -12,6 +12,7 @@
   position: relative;
   gap: 1.2rem;
   margin-top: 1.2rem;
+  position: relative;
 }
 
 .recipe {
@@ -86,6 +87,7 @@
   justify-content: center;
   padding: 0.5rem;
   opacity: 0;
+  z-index: 10;
   /* transition: opacity 0.3s ease-in-out; */
 }
 
@@ -131,4 +133,27 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.quicklinks {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.recipeLoader {
+  margin: auto auto;
+  padding: 1rem 0;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.checkbox {
+  user-select: none;
+  margin-bottom: 12px;
+  /* cursor: pointer; */
+
+  /* align-items: center; */
 }

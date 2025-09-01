@@ -21,12 +21,38 @@
   gap: 1rem;
   min-height: 32px;
 }
-.picked {
+/* .picked {
   text-decoration: line-through;
   opacity: 0.6;
   cursor: pointer;
+  border: none;
+  background: none;
+  text-align: left;
+  overflow-wrap: break-word;
 }
 
 .unpicked {
   cursor: pointer;
+  border: none;
+  background: none;
+  text-align: left;
+  overflow-wrap: break-word;
+} */
+
+.picked,
+.unpicked {
+  cursor: pointer;
+  border: none;
+  background: none;
+  text-align: left;
+  overflow-wrap: break-word;
+  max-width: calc(100% - 3rem);
+  color: black;
+  font-size: 1rem;
+  padding: 0;
+}
+
+.picked {
+  text-decoration: line-through;
+  opacity: 0.6;
 }

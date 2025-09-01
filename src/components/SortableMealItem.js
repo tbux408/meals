@@ -48,6 +48,7 @@ export default function SortableMealItem({
 
   const [editValue, setEditValue] = useState(
     mealItem.items
+      .sort((a, b) => a.priority - b.priority)
       .map((item, index) => {
         if (item.type === "item") {
           return "-" + item.content;
@@ -141,6 +142,7 @@ export default function SortableMealItem({
 
   return (
     <div
+      id={mealItem}
       ref={setNodeRef} // Attach the ref from useSortable
       style={style}
     >

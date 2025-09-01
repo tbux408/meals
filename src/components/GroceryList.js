@@ -19,8 +19,9 @@ const ALLOWED_CATEGORIES = [
   "Bakery & Bread",
   "Frozen",
   "Other",
+  "",
 ];
-function GroceryList({ meals, setLoggedIn, setMeals }) {
+function GroceryList({ meals, setLoggedIn, setMeals, setCheckingMarks }) {
   const allItems = meals.flatMap((meal) => meal.items);
 
   const checkedItems = allItems.filter((item) => item.checked);
@@ -38,6 +39,8 @@ function GroceryList({ meals, setLoggedIn, setMeals }) {
   }, {});
 
   const handlePicked = async (init_item) => {
+    setCheckingMarks(true);
+
     const updated_item = init_item;
 
     updated_item.picked = !init_item.picked;
@@ -58,6 +61,7 @@ function GroceryList({ meals, setLoggedIn, setMeals }) {
       updated_item,
       setLoggedIn
     );
+    setCheckingMarks(false);
   };
 
   const handleRemove = async (init_item) => {
@@ -95,12 +99,12 @@ function GroceryList({ meals, setLoggedIn, setMeals }) {
                 <dt className={styles.title}>{category}</dt>
                 {itemsInCategory.map((item) => (
                   <dd key={item.id || item.content} className={styles.item}>
-                    <div
+                    <button
                       className={item.picked ? styles.picked : styles.unpicked}
                       onClick={() => handlePicked(item)}
                     >
                       {item.content}
-                    </div>
+                    </button>
                     {item.picked && (
                       <IconButton
                         aria-label="uncheck"

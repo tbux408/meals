@@ -2,6 +2,8 @@ import styles from "./Meals.module.css";
 import React, { useEffect, useState } from "react";
 import CircleIcon from "@mui/icons-material/Circle";
 import MealContainer from "./MealContainer";
+import RestoreIcon from "@mui/icons-material/Restore";
+
 // import { login, get_meals } from "./../fetch/fetch";
 import {
   DndContext,
@@ -19,7 +21,15 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities"; // For transform styling
 import SortableMealItem from "./SortableMealItem";
-import { Divider, Fab, IconButton, Tab, Tabs } from "@mui/material";
+import {
+  Chip,
+  Divider,
+  Fab,
+  IconButton,
+  Skeleton,
+  Tab,
+  Tabs,
+} from "@mui/material";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import AddIcon from "@mui/icons-material/Add";
 import {
@@ -32,11 +42,21 @@ import { fetch_meals, get_meals } from "../fetch/fetch";
 import LocalGroceryStoreIcon from "@mui/icons-material/LocalGroceryStore";
 import RestaurantIcon from "@mui/icons-material/Restaurant";
 import GroceryList from "./GroceryList";
+import MealLoader from "./MealLoader";
 
-function Meals({ meals, setMeals, setLoggedIn }) {
+function Meals({
+  meals,
+  setMeals,
+  setLoggedIn,
+  isLoading,
+  setIsLoading,
+  updateVersion,
+  setUpdateVersion,
+}) {
   //   const [passcode, setPasscode] = useState("");
 
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
+  const [checkingMarks, setCheckingMarks] = useState(false);
 
   useEffect(() => {
     const timerId = setInterval(() => {
@@ -46,6 +66,24 @@ function Meals({ meals, setMeals, setLoggedIn }) {
       clearInterval(timerId);
     };
   }, []);
+  const [mode, setMode] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (mode !== 2 && !checkingMarks) {
+        const temp_meals = await get_meals(
+          `/meals?update=${updateVersion}`,
+          setLoggedIn
+        );
+        setUpdateVersion(temp_meals.date);
+        if (temp_meals.mealGroups.length > 0) {
+          setMeals(temp_meals.mealGroups);
+        }
+      }
+    }, 10000); // every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [mode, updateVersion, checkingMarks]);
 
   const formatDateTime = (date) => {
     const options = {
@@ -102,7 +140,6 @@ function Meals({ meals, setMeals, setLoggedIn }) {
   }
 
   const [editMode, setEditMode] = useState(false);
-  const [mode, setMode] = useState(0);
 
   const handleInsert = async (index = 0, type = "meal") => {
     if (type === "section") {
@@ -110,7 +147,7 @@ function Meals({ meals, setMeals, setLoggedIn }) {
         "POST",
         "/meals",
         {
-          id: -1,
+          id: index,
           type: "section",
           priority: index,
           items: [
@@ -133,7 +170,7 @@ function Meals({ meals, setMeals, setLoggedIn }) {
         "POST",
         "/meals",
         {
-          id: -1,
+          id: index,
           type: "meal",
           priority: index,
           items: [
@@ -167,6 +204,26 @@ function Meals({ meals, setMeals, setLoggedIn }) {
   const handleChangeMode = (event, newValue) => {
     console.log("Mode changed to:", newValue);
     setMode(newValue);
+  };
+
+  const scrollToId = (id) => {
+    console.log("Scrolling to ID:", id);
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const handleRefresh = async () => {
+    console.log("Refreshing meals...");
+    setIsLoading(true);
+    setMeals([]);
+    const temp_meals = await get_meals(`/meals?update=latest`, setLoggedIn);
+    setIsLoading(false);
+    setUpdateVersion(temp_meals.date);
+    setMeals(temp_meals.mealGroups);
+
+    console.log("Meals refreshed:", temp_meals);
   };
 
   return (
@@ -235,14 +292,68 @@ function Meals({ meals, setMeals, setLoggedIn }) {
       )}{" "}
       {mode === 0 && (
         <div className={styles.mealsList}>
-          {meals.map((mealItem) => (
-            <MealContainer
-              key={mealItem.id}
-              initialMealItem={mealItem}
-              setMeals={setMealsHelper}
-              setLoggedIn={setLoggedIn}
+          <div className={styles.quicklinks}>
+            <Chip
+              variant="outlined"
+              onClick={handleRefresh}
+              icon={<RestoreIcon />}
+              label="Refresh"
             />
-          ))}
+            {isLoading && (
+              <Skeleton
+                variant="rounded"
+                width={"5rem"}
+                height={"32px"}
+                sx={{ borderRadius: "20px" }}
+                disabled={isLoading}
+              />
+            )}
+            {isLoading && (
+              <Skeleton
+                variant="rounded"
+                width={"6rem"}
+                height={"32px"}
+                sx={{ borderRadius: "20px" }}
+                disabled={isLoading}
+              />
+            )}
+            {isLoading && (
+              <Skeleton
+                variant="rounded"
+                width={"5.5rem"}
+                height={"32px"}
+                sx={{ borderRadius: "20px" }}
+                disabled={isLoading}
+              />
+            )}
+
+            {!isLoading &&
+              meals
+                .filter((meal) => meal.type === "section")
+                .map((meal) => (
+                  <Chip
+                    key={meal.id + "header"}
+                    label={meal.items[0].content}
+                    variant="outlined"
+                    onClick={() => scrollToId(meal.id + "item")}
+                  />
+                ))}
+          </div>
+
+          {!isLoading &&
+            meals
+              .sort((a, b) => a.priority - b.priority)
+              .map((mealItem) => (
+                <MealContainer
+                  key={mealItem.id}
+                  mealItem={mealItem}
+                  setMeals={setMeals}
+                  setMealHelper={setMealsHelper}
+                  setLoggedIn={setLoggedIn}
+                  meals={meals}
+                  setCheckingMarks={setCheckingMarks}
+                />
+              ))}
         </div>
       )}
       {mode === 1 && (
@@ -251,9 +362,11 @@ function Meals({ meals, setMeals, setLoggedIn }) {
             meals={meals}
             setLoggedIn={setLoggedIn}
             setMeals={setMeals}
+            setCheckingMarks={setCheckingMarks}
           />
         </div>
       )}
+      <MealLoader isLoading={isLoading} />
     </div>
   );
 }
